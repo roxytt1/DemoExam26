@@ -99,6 +99,25 @@ First, you need to change the name of the server itself.
 
 <img width="451" height="183" alt="image" src="https://github.com/user-attachments/assets/bf704aa1-8ab8-4c07-8088-20896bfc2a94" />
 
+## NAT 
+
+``Control`` -> ``Add roles and features`` -> ``Remote Access``
+#### The main thing in Role Services is to check the "Routing" box.
+
+<img width="658" height="292" alt="image" src="https://github.com/user-attachments/assets/dfe08d81-4e4c-406d-b969-90b178e2fb83" />
+
+## NAT setup
+
+``Tools`` -> ``Routing and Remote Access``
+
+<img width="510" height="166" alt="image" src="https://github.com/user-attachments/assets/09161aaf-d07e-4a58-b1be-9d7d7ac17125" />
+
+# End of DC1 setup
+
+
+
+
+
 
 
 
