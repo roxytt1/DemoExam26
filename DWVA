@@ -1,0 +1,224 @@
+. Создай Ubuntu Server
+
+Подойдет Ubuntu Server 22.04 или 24.04.
+
+После установки обнови систему:
+
+sudo apt update
+sudo apt upgrade -y
+
+Узнай IP:
+
+ip a
+2. Установи Apache
+sudo apt install apache2 -y
+
+Проверь:
+
+sudo systemctl status apache2
+
+Открой в браузере:
+
+http://IP_СЕРВЕРА
+
+Должна появиться страница Apache.
+
+3. Установи PHP
+sudo apt install php php-mysql php-gd libapache2-mod-php php-mbstring -y
+
+Проверка:
+
+php -v
+4. Установи MariaDB
+sudo apt install mariadb-server -y
+
+Запусти настройку:
+
+sudo mysql_secure_installation
+
+Можно оставить настройки по умолчанию.
+
+5. Скачать DVWA
+
+Перейди в каталог сайта:
+
+cd /var/www/html
+
+Установи Git:
+
+sudo apt install git -y
+
+Скачай DVWA:
+
+sudo git clone https://github.com/digininja/DVWA.git
+6. Настрой права
+sudo chown -R www-data:www-data /var/www/html/DVWA
+sudo chmod -R 755 /var/www/html/DVWA
+7. Создай базу данных
+
+Войди в MariaDB:
+
+sudo mysql
+
+Создай БД:
+
+CREATE DATABASE dvwa;
+CREATE USER 'dvwa'@'localhost' IDENTIFIED BY 'dvwa123';
+GRANT ALL PRIVILEGES ON dvwa.* TO 'dvwa'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+8. Настрой DVWA
+
+Перейди:
+
+cd /var/www/html/DVWA/config
+
+Скопируй конфиг:
+
+sudo cp config.inc.php.dist config.inc.php
+
+Открой:
+
+sudo nano config.inc.php
+
+Найди:
+
+$_DVWA['db_user']
+$_DVWA['db_password']
+
+Замени на:
+
+$_DVWA['db_user'] = 'dvwa';
+$_DVWA['db_password'] = 'dvwa123';
+9. Включи нужные модули PHP
+
+Открой:
+
+php -m
+
+Если чего-то нет:
+
+sudo apt install php-curl php-xml php-zip php-mbstring -y
+10. Перезапусти Apache
+sudo systemctl restart apache2
+11. Открой DVWA
+
+В браузере:
+
+http://IP_СЕРВЕРА/DVWA
+
+Появится страница настройки.
+
+Нажми:
+
+Create / Reset Database
+12. Вход в систему
+
+Логин:
+
+admin
+
+Пароль:
+
+password
+13. Установи уровень безопасности
+
+DVWA Security → Security Level:
+
+Low
+
+
+
+1. Command Injection
+
+Механика возникновения:
+Приложение передает пользовательский ввод в системную команду без проверки.
+
+Способ эксплуатации:
+В поле ввода передается дополнительная команда whoami, которая выполняется на сервере.
+
+Последствия присутствия уязвимости:
+Злоумышленник может выполнять команды операционной системы и получать контроль над сервером.
+
+Способ устранения уязвимости:
+Проверять входные данные и исключить прямой вызов системных команд с пользовательским вводом.
+
+2. File Inclusion
+
+Механика возникновения:
+Приложение позволяет подключать файлы на основе пользовательского ввода без проверки пути.
+
+Способ эксплуатации:
+В параметре page указывается путь к файлу /etc/passwd для просмотра его содержимого.
+
+Последствия присутствия уязвимости:
+Возможен доступ к конфиденциальным файлам сервера.
+
+Способ устранения уязвимости:
+Использовать список разрешенных файлов и проверять входные данные.
+
+3. SQL Injection
+
+Механика возникновения:
+Пользовательский ввод вставляется в SQL-запрос без фильтрации.
+
+Способ эксплуатации:
+В поле ввода передается SQL-конструкция, изменяющая логику запроса.
+
+Последствия присутствия уязвимости:
+Возможны просмотр, изменение или удаление данных базы данных.
+
+Способ устранения уязвимости:
+Использовать параметризованные запросы и проверку входных данных.
+
+
+
+1. Command Injection
+127.0.0.1 && whoami
+
+2. File Inclusion
+http://IP/DVWA/vulnerabilities/fi/?page=include.php
+http://IP/DVWA/vulnerabilities/fi/?page=/etc/passwd
+
+3. SQL Injection
+1' OR '1'='1
+
+
+
+
+Через Active Directory Users and Computers
+Открой Active Directory Users and Computers (dsa.msc).
+Выбери нужный OU или контейнер Users.
+ПКМ → New → User.
+Заполни:
+First name: admin
+User logon name: admin
+Нажми Next.
+
+Пароль:
+
+Skill39!
+Сними галочку User must change password at next logon.
+Поставь:
+Password never expires (если разрешено заданием)
+Нажми Finish.
+Выдать права доменного администратора
+Открой свойства пользователя admin.
+Вкладка Member Of.
+Нажми Add.
+
+Добавь группу:
+
+Domain Admins
+Нажми OK.
+Выдать права локального администратора на контроллере домена
+
+Если это именно контроллер домена, то членства в Domain Admins достаточно — такие пользователи автоматически обладают административными правами на DC.
+
+Проверить можно командой:
+
+whoami /groups
+
+Там должна присутствовать группа:
+
+Domain Admins
